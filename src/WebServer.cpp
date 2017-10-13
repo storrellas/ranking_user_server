@@ -21,9 +21,6 @@ WebServer::WebServer() :
 }
 
 WebServer::~WebServer(){
-  _io_service.stop();
-  //_th_accept_worker->join();
-  delete _th_accept_worker;
 }
 
 void WebServer::init(const int& port){
@@ -42,6 +39,16 @@ void WebServer::init(const int& port){
 //      new boost::thread(boost::bind(&AsteriskMockup::accept_worker, this));
 
 
+}
+
+void WebServer::stop(){
+  _socket.close();
+  _socket_client.close();
+  _io_service.stop();
+}
+
+void WebServer::reset(){
+  _io_service.reset();
 }
 
 // -----------------------
@@ -105,8 +112,9 @@ void WebServer::do_read(const boost::system::error_code& err){
 
     process_message( line );
 
-    boost::asio::async_read_until(_socket_client, streambuf_, "\n",
-        boost::bind(&WebServer::do_read, this, boost::asio::placeholders::error));
+    _socket_client.close();
+//    boost::asio::async_read_until(_socket_client, streambuf_, "\n",
+//        boost::bind(&WebServer::do_read, this, boost::asio::placeholders::error));
 
   }
   else
@@ -138,4 +146,5 @@ void WebServer::process_message(string input){
 
   // Send response to client
   do_send("OK\n");
+
 }

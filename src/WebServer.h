@@ -21,7 +21,7 @@ public:
    */
   const static int LOCAL_PORT_INT = 8080;
 
-private :
+public :
   std::mutex _operation_mutex;
 
   /**
@@ -67,9 +67,19 @@ public:
 
 
   /**
-   * Initialises the Twilio controller
+   * Initialises
    */
   void init(const int& port = LOCAL_PORT_INT);
+
+  /**
+   * Stops
+   */
+  void stop();
+
+  /**
+   * Reset
+   */
+  void reset();
 
 public:
 
