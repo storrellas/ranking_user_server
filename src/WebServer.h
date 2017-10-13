@@ -102,14 +102,13 @@ public:
   static bool score_compare(std::pair<string,string> pair1,
   								std::pair<string,string> pair2);
 
-public:
-
 
   /**
    * @brief accept_worker thread aimed at receiving information from PBXServer
    */
   void accept_worker();
 
+private:
   /**
    * @brief do_accept Performs accept operations
    */
@@ -132,6 +131,8 @@ public:
    * @param msg
    */
   void process_message(string msg);
+
+
 
 
 };

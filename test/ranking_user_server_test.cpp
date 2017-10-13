@@ -133,7 +133,31 @@ void _02_score_introduced(){
     web_server->clear();
 }
 
-void _03_top(){
+void _03_score_opeartor(){
+	// 1. Introduce scores
+	_introduce_score("123", "700");
+	_introduce_score("123", "+20");
+
+	// 2. List
+	string response;
+    _do_send_and_receive("list\n", response);
+    cout << "INFO: Read from server -> " << response << endl;
+
+    // Analyse reponse
+    ptree pt;
+    std::istringstream is (response);
+    read_json (is, pt);
+
+    ptree score_list_pt = pt.get_child("score_list");
+    if(score_list_pt.size() != 1){
+    	cerr << "Error: Scores not properly introduced" << endl;
+    }
+
+    // Clear WebServer cache
+    web_server->clear();
+}
+
+void _04_top(){
 
 	// 1. Introduce scores
 	_introduce_score("123", "789");
@@ -170,7 +194,12 @@ int main()
   cout << "++++++++++++++++++++++++"  << endl;
   cout << "Test #3 " << endl;
   cout << "++++++++++++++++++++++++"  << endl;
-  _03_top();
+  _03_score_opeartor();
+
+  cout << "++++++++++++++++++++++++"  << endl;
+  cout << "Test #4 " << endl;
+  cout << "++++++++++++++++++++++++"  << endl;
+  _04_top();
 
   // Destroy WebServer
   destroy();

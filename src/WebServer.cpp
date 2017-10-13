@@ -164,12 +164,37 @@ void WebServer::process_message(string input){
       std::string score = pt.get<std::string> ("score");
       if( user.empty() ) res = false;
 
-      if( res ){
+      if( !res ){
+    	  // Send response to client
+    	  string res_str = res?"OK":"KO";
+    	  do_send(res_str + "\n");
+    	  return;
+      }
+
+      if( score.find("+")!= std::string::npos and score.find("-")!= std::string::npos){
           cout << "INFO: Introduced score user:" << user << " score:" << score << endl;
           _user_score_map.push_back(std::make_pair(user, score));
 
-          // using function as comp
+          // Sort elements with new values
           std::sort (_user_score_map.begin(), _user_score_map.end(), score_compare);
+      }else{
+    	  string operation = score.substr(0,1);
+    	  int value = std::stoi(score.substr(1,score.size()-1));
+
+		  auto it = std::find_if( _user_score_map.begin(), _user_score_map.end(),
+		      [](const std::pair<std::string, int>& element){ return element.first == user;} );
+    	  if( operation.find("+") != std::string::npos ){
+    		  it->second = value;
+    	  }else if( operation.find("-") != std::string::npos ){
+    		  it->second = value;
+    	  }else{
+    		  res = false;
+    	  }
+
+    	  cout << "operation " << operation << endl;
+    	  cout << "value " << value << endl;
+
+
       }
 
 	  // Send response to client
