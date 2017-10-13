@@ -90,6 +90,11 @@ public:
    */
   void reset();
 
+  /**
+   * Clear map
+   */
+  void clear(){ _user_score_map.clear(); }
+
 public:
 
 

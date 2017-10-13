@@ -165,7 +165,8 @@ void WebServer::process_message(string input){
 	  string res_str = res?"OK":"KO";
 	  do_send(res_str + "\n");
 
-  }else if (input.find("list") == 0)
+  }
+  else if (input.find("list") == 0)
   {
 	  ptree pt;
 	  ptree score_list_pt;
@@ -180,7 +181,14 @@ void WebServer::process_message(string input){
       write_json (buf, pt, false);
       std::string response = buf.str(); // {"foo":"bar"}
       do_send(response + "\n");
-  }else{
+  }
+  else if (input.find("Top") == 0)
+  {
+	  string elements = input.substr(3, input.size()-3);
+	  cout << "Getting Top of " << elements << endl;
+  }
+  else
+  {
 	  do_send("command not recognized\n");
   }
 

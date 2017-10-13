@@ -45,7 +45,7 @@ void destroy(){
   delete _th_accept_worker;
 }
 
-void do_send_and_receive(const string& request, string& response){
+void _do_send_and_receive(const string& request, string& response){
 
 	boost::system::error_code error;
     boost::asio::io_service io_service;
@@ -74,29 +74,69 @@ void do_send_and_receive(const string& request, string& response){
 
 }
 
+string _generate_json(const ptree pt){
+    std::ostringstream buf;
+    write_json (buf, pt, false);
+    return buf.str();
+}
+
+
+string _introduce_score(const string user, const string score){
+    ptree pt;
+    pt.put("user", user);
+    pt.put("score", score);
+
+    std::string json = _generate_json(pt);
+
+    string response;
+    _do_send_and_receive(json, response);
+    cout << "INFO: Read from server -> " << response << endl;
+    return response;
+
+}
+
 }
 
 
 
+
 void _01_score_introduced(){
-
-	// 1. Introduce score
-    ptree pt;
-    pt.put("user", "123");
-    pt.put("score", "789");
-
-    std::ostringstream buf;
-    write_json (buf, pt, false);
-    std::string json = buf.str(); // {"foo":"bar"}
-    cout << json << endl;
-
-    string response;
-	do_send_and_receive(json, response);
-    cout << "INFO: Read from server -> " << response << endl;
+	// 1. Introduce scores
+	_introduce_score("123", "789");
+	_introduce_score("456", "345");
 
 	// 2. List
-	do_send_and_receive("list\n", response);
+	string response;
+    _do_send_and_receive("list\n", response);
     cout << "INFO: Read from server -> " << response << endl;
+
+    // Analyse reponse
+    ptree pt;
+    std::istringstream is (response);
+    read_json (is, pt);
+
+    ptree score_list_pt = pt.get_child("score_list");
+    if(score_list_pt.size() != 2){
+    	cerr << "Error: Scores not properly introduced" << endl;
+    }
+
+    // Clear WebServer cache
+    web_server->clear();
+}
+
+void _02_top(){
+
+	// 1. Introduce scores
+	_introduce_score("123", "789");
+	_introduce_score("456", "345");
+	_introduce_score("456", "123");
+	_introduce_score("456", "002");
+
+	// 2. List
+	string response;
+    _do_send_and_receive("list\n", response);
+    cout << "INFO: Read from server -> " << response << endl;
+
 }
 
 int main()
@@ -104,7 +144,15 @@ int main()
   // Initialise WebServer
   init();
 
+  cout << "++++++++++++++++++++++++"  << endl;
+  cout << "Test #1 " << endl;
+  cout << "++++++++++++++++++++++++"  << endl;
   _01_score_introduced();
+
+  cout << "++++++++++++++++++++++++"  << endl;
+  cout << "Test #2 " << endl;
+  cout << "++++++++++++++++++++++++"  << endl;
+  //_02_top();
 
   // Destroy WebServer
   destroy();
