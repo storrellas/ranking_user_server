@@ -13,9 +13,7 @@
 
 using namespace std;
 
-const string ASTERISK_MOCKUP_VERSION ="0.1";
-
-class AsteriskMockup
+class WebServer
 {
 public:
   /**
@@ -64,8 +62,8 @@ private :
 
 public:
 
-  AsteriskMockup();
-  virtual ~AsteriskMockup();
+  WebServer();
+  virtual ~WebServer();
 
 
   /**

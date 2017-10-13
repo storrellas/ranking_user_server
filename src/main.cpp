@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <src/AsteriskMockup.h>
+#include <src/WebServer.h>
 
 using namespace std;
 
@@ -13,9 +13,9 @@ int main()
 //	_asterisk_mockup->init();
 //  }
 
-	AsteriskMockup asterisk_mockup;
-	asterisk_mockup.init();
-	asterisk_mockup.accept_worker();
+	WebServer web_server;
+	web_server.init();
+	web_server.accept_worker();
 
     cout << "Hello World!" << endl;
     return 0;

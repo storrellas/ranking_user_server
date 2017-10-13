@@ -2,7 +2,7 @@
  * TwilioMockup.cpp
  */
 
-#include "AsteriskMockup.h"
+#include "WebServer.h"
 
 
 
@@ -10,9 +10,9 @@ namespace {
 
 } // namespace
 
-const int AsteriskMockup::LOCAL_PORT_INT;
+const int WebServer::LOCAL_PORT_INT;
 
-AsteriskMockup::AsteriskMockup() :
+WebServer::WebServer() :
   _io_service(),
   _socket(_io_service),
   _socket_client(_io_service),
@@ -20,13 +20,13 @@ AsteriskMockup::AsteriskMockup() :
 {
 }
 
-AsteriskMockup::~AsteriskMockup(){
+WebServer::~WebServer(){
   _io_service.stop();
   _th_accept_worker->join();
   delete _th_accept_worker;
 }
 
-void AsteriskMockup::init(const int& port){
+void WebServer::init(const int& port){
 
   //LLOG_INFO(LogItem(undefined, "Initialising Asterisk Mockup"));
 	cout << "Initialising Asterisk Mockup" << endl;
@@ -49,7 +49,7 @@ void AsteriskMockup::init(const int& port){
 // Commmunication functions
 // -----------------------
 
-void AsteriskMockup::accept_worker(){
+void WebServer::accept_worker(){
 
   //LLOG_INFO(LogItem(undefined, "Started accept_worker"));
 	cout << "Started accept_worker" << endl;
@@ -66,7 +66,7 @@ void AsteriskMockup::accept_worker(){
   //LLOG_INFO(LogItem(undefined, "Terminated accept_worker"));
 }
 
-void AsteriskMockup::do_accept(){
+void WebServer::do_accept(){
 
   _acceptor.async_accept(_socket,
       [this](boost::system::error_code ec)
@@ -75,7 +75,7 @@ void AsteriskMockup::do_accept(){
         {
           _socket_client = std::move(_socket);
           boost::asio::async_read_until(_socket_client, streambuf_, "\n",
-              boost::bind(&AsteriskMockup::do_read, this, boost::asio::placeholders::error));
+              boost::bind(&WebServer::do_read, this, boost::asio::placeholders::error));
 
         }
 
@@ -83,7 +83,7 @@ void AsteriskMockup::do_accept(){
       });
 }
 
-void AsteriskMockup::do_read(const boost::system::error_code& err){
+void WebServer::do_read(const boost::system::error_code& err){
 
   if (!err)
   {
@@ -106,7 +106,7 @@ void AsteriskMockup::do_read(const boost::system::error_code& err){
     }
 
     boost::asio::async_read_until(_socket_client, streambuf_, "\n",
-        boost::bind(&AsteriskMockup::do_read, this, boost::asio::placeholders::error));
+        boost::bind(&WebServer::do_read, this, boost::asio::placeholders::error));
 
   }
   else
@@ -117,7 +117,7 @@ void AsteriskMockup::do_read(const boost::system::error_code& err){
 
 }
 
-bool AsteriskMockup::do_send(const string& data){
+bool WebServer::do_send(const string& data){
   if( !data.empty() ){
 
     boost::system::error_code ignored_error;
@@ -131,7 +131,7 @@ bool AsteriskMockup::do_send(const string& data){
   }
 }
 
-void AsteriskMockup::process_message(string input){
+void WebServer::process_message(string input){
 
   std::lock_guard<std::mutex> guard(_operation_mutex);
   cout << "Processing message " << endl;
