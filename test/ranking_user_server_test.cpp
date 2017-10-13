@@ -155,15 +155,11 @@ void _03_score_opeartor(){
     	cerr << "Error: Scores not properly introduced" << endl;
     }
 
-//    for(const ptree::value_type& child: score_list_pt){
-//    	cout << child<string>get("score") << endl;
-//    }
+    bool res = false;
     BOOST_FOREACH(ptree::value_type& child, score_list_pt){
-    	//cout << child.second.get<string>("score") << endl;
-
-    	cout << child.first << endl;
+    	if( child.second.get<string>("score") == "680" ) res = true;
     }
-
+    if(!res) cerr << "ERROR on scores" << endl;
     // Clear WebServer cache
     web_server->clear();
 }
@@ -184,6 +180,15 @@ void _04_top(){
 	// 3. Top
     _do_send_and_receive("Top2\n", response);
     cout << "INFO: Read from server -> " << response << endl;
+
+    // Analyse reponse
+    ptree pt;
+    std::istringstream is (response);
+    read_json (is, pt);
+    ptree score_list_pt	 = pt.get_child("score_list");
+    if(score_list_pt.size() != 2){
+    	cerr << "Error: _04_top" << endl;
+    }
 
     // Clear WebServer cache
     web_server->clear();
@@ -208,6 +213,15 @@ void _05_at(){
 	// 3. At
     _do_send_and_receive("At3/2\n", response);
     cout << "INFO: Read from server -> " << response << endl;
+
+    // Analyse reponse
+    ptree pt;
+    std::istringstream is (response);
+    read_json (is, pt);
+    ptree score_list_pt	 = pt.get_child("score_list");
+    if(score_list_pt.size() != 5){
+    	cerr << "Error: _05_at" << endl;
+    }
 
 }
 
