@@ -139,12 +139,9 @@ bool WebServer::do_send(const string& data){
   }
 }
 
-bool WebServer::score_compare(std::pair<string,string> pair1,
-								std::pair<string,string> pair2){
-
-	int pair1_score = std::stoi (pair1.second);
-	int pair2_score = std::stoi (pair2.second);
-	return (pair1_score < pair2_score);
+bool WebServer::score_compare(std::pair<string,int> pair1,
+								std::pair<string,int> pair2){
+	return (pair1.second < pair2.second);
 }
 
 void WebServer::process_message(string input){
@@ -171,9 +168,10 @@ void WebServer::process_message(string input){
     	  return;
       }
 
-      if( score.find("+")!= std::string::npos and score.find("-")!= std::string::npos){
+      if( score.find("+") == std::string::npos and score.find("-") == std::string::npos){
           cout << "INFO: Introduced score user:" << user << " score:" << score << endl;
-          _user_score_map.push_back(std::make_pair(user, score));
+          int score_int = std::stoi(score);
+          _user_score_map.push_back(std::make_pair(user, score_int));
 
           // Sort elements with new values
           std::sort (_user_score_map.begin(), _user_score_map.end(), score_compare);
@@ -182,11 +180,11 @@ void WebServer::process_message(string input){
     	  int value = std::stoi(score.substr(1,score.size()-1));
 
 		  auto it = std::find_if( _user_score_map.begin(), _user_score_map.end(),
-		      [](const std::pair<std::string, int>& element){ return element.first == user;} );
+		      [&user](const std::pair<std::string, int>& element){ return element.first == user;} );
     	  if( operation.find("+") != std::string::npos ){
-    		  it->second = value;
+    		  it->second += value;
     	  }else if( operation.find("-") != std::string::npos ){
-    		  it->second = value;
+    		  it->second -= value;
     	  }else{
     		  res = false;
     	  }
@@ -208,7 +206,7 @@ void WebServer::process_message(string input){
 	  ptree score_list_pt;
 	  for( auto item : _user_score_map ){
 		  ptree child;
-		  child.put(item.first, item.second);
+		  child.put(item.first, std::to_string(item.second));
 		  score_list_pt.push_back(std::make_pair("", child));
 	  }
 	  pt.add_child("score_list", score_list_pt);
@@ -225,10 +223,10 @@ void WebServer::process_message(string input){
 	  ptree pt;
 	  ptree score_list_pt;
 
-	  std::vector<std::pair<string,string>>::reverse_iterator rit = _user_score_map.rbegin();
+	  std::vector<std::pair<string,int>>::reverse_iterator rit = _user_score_map.rbegin();
 	  for (; rit!= _user_score_map.rend(); ++rit){
 		  ptree child;
-		  child.put(rit->first, rit->second);
+		  child.put(rit->first, std::to_string(rit->second));
 		  score_list_pt.push_back(std::make_pair("", child));
 		  elements --;
 		  if( elements == 0) break;

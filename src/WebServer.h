@@ -68,7 +68,7 @@ public :
    * Maps of user score
    */
   //std::map<string,string> _user_score_map;
-  std::vector<std::pair<string,string>> _user_score_map;
+  std::vector<std::pair<string,int>> _user_score_map;
 
 public:
 
@@ -99,8 +99,8 @@ public:
   /**
    * Compare score with pairs
    */
-  static bool score_compare(std::pair<string,string> pair1,
-  								std::pair<string,string> pair2);
+  static bool score_compare(std::pair<string,int> pair1,
+  								std::pair<string,int> pair2);
 
 
   /**

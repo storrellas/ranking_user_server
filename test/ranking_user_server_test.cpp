@@ -98,8 +98,8 @@ string _introduce_score(const string user, const string score){
 }
 
 void _01_score_compare(){
-	std::pair<string, string> pair1("123", "456");
-	std::pair<string, string> pair2("345", "879");
+	std::pair<string, int> pair1("123", 456);
+	std::pair<string, int> pair2("345", 879);
 
 	if( WebServer::score_compare(pair1, pair2) ) {
 		cerr << "Error: on compare" << endl;
