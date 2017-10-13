@@ -187,7 +187,9 @@ void WebServer::process_message(string input){
 	  ptree score_list_pt;
 	  for( auto item : _user_score_map ){
 		  ptree child;
-		  child.put(item.first, std::to_string(item.second));
+		  child.put("user", item.first);
+		  score_list_pt.push_back(std::make_pair("", child));
+		  child.put("score", std::to_string(item.second));
 		  score_list_pt.push_back(std::make_pair("", child));
 	  }
 	  pt.add_child("score_list", score_list_pt);
@@ -207,7 +209,9 @@ void WebServer::process_message(string input){
 	  std::vector<std::pair<string,int>>::reverse_iterator rit = _user_score_map.rbegin();
 	  for (; rit!= _user_score_map.rend(); ++rit){
 		  ptree child;
-		  child.put(rit->first, std::to_string(rit->second));
+		  child.put("user", rit->first);
+		  score_list_pt.push_back(std::make_pair("", child));
+		  child.put("score", std::to_string(rit->second));
 		  score_list_pt.push_back(std::make_pair("", child));
 		  elements --;
 		  if( elements == 0) break;
@@ -241,8 +245,12 @@ void WebServer::process_message(string input){
 	  ptree score_list_pt;
 	  for( int i = min_index; i < max_index+1; ++i ){
 		  ptree child;
-		  child.put(_user_score_map[i].first, std::to_string(_user_score_map[i].second));
+		  child.put("user", _user_score_map[i].first);
 		  score_list_pt.push_back(std::make_pair("", child));
+		  child.put("score", std::to_string(_user_score_map[i].second));
+		  score_list_pt.push_back(std::make_pair("", child));
+
+
 	  }
 	  pt.add_child("score_list", score_list_pt);
 

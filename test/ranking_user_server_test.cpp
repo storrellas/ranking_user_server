@@ -154,6 +154,10 @@ void _03_score_opeartor(){
     	cerr << "Error: Scores not properly introduced" << endl;
     }
 
+    for(const ptree::value_type& child: score_list_pt){
+    	//cout << value_type<string>get()
+    }
+
     // Clear WebServer cache
     web_server->clear();
 }
@@ -192,7 +196,7 @@ void _05_at(){
 
 	// 2. List
 	string response;
-    _do_send_and_receive("list\n", response);
+    _do_send_and_receive("List\n", response);
     cout << "INFO: Read from server -> " << response << endl;
 
 	// 3. At
