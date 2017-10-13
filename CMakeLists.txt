@@ -23,11 +23,19 @@ add_executable(${PROJECT_NAME} ${SRC_LIST};./src/main.cpp)
 target_link_libraries (${PROJECT_NAME} "boost_system")
 target_link_libraries (${PROJECT_NAME} "boost_thread")
 
+# Create test executable	
 set(PROJECT_TEST_NAME ${PROJECT_NAME}_test)
 add_executable(${PROJECT_TEST_NAME} ${SRC_LIST};./test/ranking_user_server_test.cpp )
 target_link_libraries (${PROJECT_TEST_NAME} "boost_system")
 target_link_libraries (${PROJECT_TEST_NAME} "boost_thread")
+target_link_libraries (${PROJECT_TEST_NAME} "boost_unit_test_framework")
 target_link_libraries (${PROJECT_TEST_NAME} "pthread")
+
+
+ADD_DEFINITIONS(-DBOOST_TEST_DYN_LINK) 
+
+enable_testing()
+add_test(${PROJECT_TEST_NAME} bin/ranking_user_server_test )
 
 
 

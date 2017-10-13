@@ -1,3 +1,6 @@
+#define BOOST_TEST_MODULE MyTest
+#include <boost/test/unit_test.hpp>
+
 // System includes
 #include <iostream>
 #include <map>
@@ -19,7 +22,6 @@ using boost::property_tree::ptree;
 using boost::property_tree::read_json;
 using boost::property_tree::write_json;
 
-namespace {
 
 const string SERVER_IP = "localhost";
 const string SERVER_PORT = "8080";
@@ -28,23 +30,6 @@ const string SERVER_PORT = "8080";
 boost::thread* _th_accept_worker;
 WebServer* web_server;
 
-void init(){
-  cout << "INFO: Starting WebServer" << endl;
-  web_server = new WebServer();
-  web_server->init();
-  _th_accept_worker =
-	  new boost::thread(boost::bind(&WebServer::accept_worker, web_server));
-}
-
-void destroy(){
-  cout << "INFO: Terminating WebServer" << endl;
-  web_server->_io_service.stop();
-  cout << "INFO: Terminating _th_accept_worker" << endl;
-  _th_accept_worker->join();
-  web_server->_io_service.reset();
-  delete web_server;
-  delete _th_accept_worker;
-}
 
 void _do_send_and_receive(const string& request, string& response){
 
@@ -96,21 +81,50 @@ string _introduce_score(const string user, const string score){
 
 }
 
-}
 
-void _01_score_compare(){
+//____________________________________________________________________________//
+
+struct WebServerManagement {
+	WebServerManagement()   {
+	  cout << "INFO: Starting WebServer" << endl;
+	  web_server = new WebServer();
+	  web_server->init();
+	  _th_accept_worker =
+		  new boost::thread(boost::bind(&WebServer::accept_worker, web_server));
+    }
+    ~WebServerManagement()  {
+	  cout << "INFO: Terminating WebServer" << endl;
+	  web_server->_io_service.stop();
+	  cout << "INFO: Terminating _th_accept_worker" << endl;
+	  _th_accept_worker->join();
+	  web_server->_io_service.reset();
+	  delete web_server;
+	  delete _th_accept_worker;
+    }
+};
+
+//____________________________________________________________________________//
+
+BOOST_GLOBAL_FIXTURE( WebServerManagement );
+
+BOOST_AUTO_TEST_CASE( score_compare )
+{
+    cout << "+++++++++++++++++++++++++++" << endl;
+    cout << "INFO: score_compare" << endl;
+    cout << "+++++++++++++++++++++++++++" << endl;
+
 	std::pair<string, int> pair1("123", 456);
 	std::pair<string, int> pair2("345", 879);
 
-	if( WebServer::score_compare(pair1, pair2) == false ) { // Means pair1 < pair2
-		cerr << "Error: on compare" << endl;
-	}
-	cout << "OK!" << endl;
+	BOOST_CHECK( WebServer::score_compare(pair1, pair2) ); // Means pair1 < pair2
 }
 
+BOOST_AUTO_TEST_CASE( score_introduced )
+{
+    cout << "+++++++++++++++++++++++++++" << endl;
+    cout << "INFO: score_introduced" << endl;
+    cout << "+++++++++++++++++++++++++++" << endl;
 
-
-void _02_score_introduced(){
 	// 1. Introduce scores
 	_introduce_score("123", "789");
 	_introduce_score("456", "345");
@@ -126,15 +140,19 @@ void _02_score_introduced(){
     read_json (is, pt);
 
     ptree score_list_pt = pt.get_child("score_list");
-    if(score_list_pt.size() != 2){
-    	cerr << "Error: Scores not properly introduced" << endl;
-    }
+    BOOST_CHECK( score_list_pt.size() == 2);
 
     // Clear WebServer cache
     web_server->clear();
 }
 
-void _03_score_opeartor(){
+
+BOOST_AUTO_TEST_CASE( score_operator )
+{
+    cout << "+++++++++++++++++++++++++++" << endl;
+    cout << "INFO: score_operator" << endl;
+    cout << "+++++++++++++++++++++++++++" << endl;
+
 	// 1. Introduce scores
 	_introduce_score("123", "700");
 	_introduce_score("123", "+20");
@@ -151,20 +169,23 @@ void _03_score_opeartor(){
     read_json (is, pt);
 
     ptree score_list_pt	 = pt.get_child("score_list");
-    if(score_list_pt.size() != 1){
-    	cerr << "Error: Scores not properly introduced" << endl;
-    }
+    BOOST_CHECK( score_list_pt.size() == 1);
 
     bool res = false;
     BOOST_FOREACH(ptree::value_type& child, score_list_pt){
     	if( child.second.get<string>("score") == "680" ) res = true;
     }
-    if(!res) cerr << "ERROR on scores" << endl;
+    BOOST_CHECK( res );
+
     // Clear WebServer cache
     web_server->clear();
 }
 
-void _04_top(){
+BOOST_AUTO_TEST_CASE( top )
+{
+    cout << "+++++++++++++++++++++++++++" << endl;
+    cout << "INFO: top" << endl;
+    cout << "+++++++++++++++++++++++++++" << endl;
 
 	// 1. Introduce scores
 	_introduce_score("123", "789");
@@ -186,15 +207,18 @@ void _04_top(){
     std::istringstream is (response);
     read_json (is, pt);
     ptree score_list_pt	 = pt.get_child("score_list");
-    if(score_list_pt.size() != 2){
-    	cerr << "Error: _04_top" << endl;
-    }
+    BOOST_CHECK( score_list_pt.size() == 2 );
 
     // Clear WebServer cache
     web_server->clear();
 }
 
-void _05_at(){
+BOOST_AUTO_TEST_CASE( at )
+{
+    cout << "+++++++++++++++++++++++++++" << endl;
+    cout << "INFO: at" << endl;
+    cout << "+++++++++++++++++++++++++++" << endl;
+
 
 	// 1. Introduce scores
 	_introduce_score("123", "789");
@@ -219,68 +243,6 @@ void _05_at(){
     std::istringstream is (response);
     read_json (is, pt);
     ptree score_list_pt	 = pt.get_child("score_list");
-    if(score_list_pt.size() != 5){
-    	cerr << "Error: _05_at" << endl;
-    }
+    BOOST_CHECK( score_list_pt.size() == 5 );
 
 }
-
-int main(int argc, char* argv[])
-{
-  int selected_test = 0;
-  if( argc == 2 ){
-	  cout << "Single test mode selected with test " << argv[1] << endl;
-	  cout << "-------------------------------------"  << endl;
-	  selected_test = stoi(argv[1]);
-  }
-
-  cout << "++++++++++++++++++++++++"  << endl;
-  cout << "Tearup" << endl;
-  cout << "++++++++++++++++++++++++"  << endl;
-  // Initialise WebServer
-  init();
-
-  if( selected_test == 0 or selected_test == 1 ){
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  cout << "Test #1" << endl;
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  _01_score_compare();
-  }
-
-  if( selected_test == 0 or selected_test == 2 ){
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  cout << "Test #2 " << endl;
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  _02_score_introduced();
-  }
-
-  if( selected_test == 0 or selected_test == 3 ){
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  cout << "Test #3 " << endl;
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  _03_score_opeartor();
-  }
-
-
-  if( selected_test == 0 or selected_test == 4 ){
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  cout << "Test #4 " << endl;
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  _04_top();
-  }
-
-  if( selected_test == 0 or selected_test == 5 ){
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  cout << "Test #5 " << endl;
-	  cout << "++++++++++++++++++++++++"  << endl;
-	  _05_at();
-  }
-
-  cout << "++++++++++++++++++++++++"  << endl;
-  cout << "Teardown" << endl;
-  cout << "++++++++++++++++++++++++"  << endl;
-  // Destroy WebServer
-  destroy();
-  return 0;
-}
-
