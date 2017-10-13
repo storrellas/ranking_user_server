@@ -181,13 +181,18 @@ void WebServer::process_message(string input){
 
 		  auto it = std::find_if( _user_score_map.begin(), _user_score_map.end(),
 		      [&user](const std::pair<std::string, int>& element){ return element.first == user;} );
-    	  if( operation.find("+") != std::string::npos ){
-    		  it->second += value;
-    	  }else if( operation.find("-") != std::string::npos ){
-    		  it->second -= value;
-    	  }else{
-    		  res = false;
-    	  }
+		  if (it != _user_score_map.end()){
+	    	  if( operation.find("+") != std::string::npos ){
+	    		  it->second += value;
+	    	  }else if( operation.find("-") != std::string::npos ){
+	    		  it->second -= value;
+	    	  }else{
+	    		  res = false;
+	    	  }
+		  }else{
+			  res = false;
+		  }
+
       }
 
 	  // Send response to client
@@ -233,6 +238,40 @@ void WebServer::process_message(string input){
       write_json (buf, pt, false);
       std::string response = buf.str(); // {"foo":"bar"}
       do_send(response + "\n");
+  }
+  else if (input.find("At") == 0)
+  {
+	  size_t delimiter_index = input.find("/");
+	  int n_index = std::stoi(input.substr(2, delimiter_index - 2));
+	  int elements = std::stoi(input.substr(delimiter_index+1, input.size() - delimiter_index ));
+
+	  int min_index = n_index - elements;
+	  int max_index = n_index + elements;
+	  if( min_index <  0) res = false;
+	  if( max_index >  _user_score_map.size() - 1) res = false;
+
+	  if( !res ){
+		  // Send response to client
+		  string res_str = res?"OK":"KO";
+		  do_send(res_str + "\n");
+	  }
+
+	  ptree pt;
+	  ptree score_list_pt;
+	  for( int i = min_index; i < max_index+1; ++i ){
+		  ptree child;
+		  child.put(_user_score_map[i].first, std::to_string(_user_score_map[i].second));
+		  score_list_pt.push_back(std::make_pair("", child));
+	  }
+	  pt.add_child("score_list", score_list_pt);
+
+
+	  std::ostringstream buf;
+      write_json (buf, pt, false);
+      std::string response = buf.str(); // {"foo":"bar"}
+      do_send(response + "\n");
+
+
   }
   else
   {

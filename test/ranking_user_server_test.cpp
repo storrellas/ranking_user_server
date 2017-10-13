@@ -175,6 +175,30 @@ void _04_top(){
     _do_send_and_receive("Top2\n", response);
     cout << "INFO: Read from server -> " << response << endl;
 
+    // Clear WebServer cache
+    web_server->clear();
+}
+
+void _05_at(){
+
+	// 1. Introduce scores
+	_introduce_score("123", "789");
+	_introduce_score("456", "345");
+	_introduce_score("456", "123");
+	_introduce_score("325", "002");
+	_introduce_score("462", "472");
+	_introduce_score("982", "458");
+	_introduce_score("943", "231");
+
+	// 2. List
+	string response;
+    _do_send_and_receive("list\n", response);
+    cout << "INFO: Read from server -> " << response << endl;
+
+	// 3. At
+    _do_send_and_receive("At3/2\n", response);
+    cout << "INFO: Read from server -> " << response << endl;
+
 }
 
 int main()
@@ -201,6 +225,11 @@ int main()
   cout << "Test #4 " << endl;
   cout << "++++++++++++++++++++++++"  << endl;
   _04_top();
+
+  cout << "++++++++++++++++++++++++"  << endl;
+  cout << "Test #5 " << endl;
+  cout << "++++++++++++++++++++++++"  << endl;
+  _05_at();
 
   // Destroy WebServer
   destroy();
