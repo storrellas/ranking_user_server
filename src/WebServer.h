@@ -67,7 +67,8 @@ public :
   /**
    * Maps of user score
    */
-  std::map<string,string> _user_score_map;
+  //std::map<string,string> _user_score_map;
+  std::vector<std::pair<string,string>> _user_score_map;
 
 public:
 
@@ -94,6 +95,12 @@ public:
    * Clear map
    */
   void clear(){ _user_score_map.clear(); }
+
+  /**
+   * Compare score with pairs
+   */
+  static bool score_compare(std::pair<string,string> pair1,
+  								std::pair<string,string> pair2);
 
 public:
 

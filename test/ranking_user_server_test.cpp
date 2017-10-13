@@ -97,10 +97,19 @@ string _introduce_score(const string user, const string score){
 
 }
 
+void _01_score_compare(){
+	std::pair<string, string> pair1("123", "456");
+	std::pair<string, string> pair2("345", "879");
+
+	if( WebServer::score_compare(pair1, pair2) ) {
+		cerr << "Error: on compare" << endl;
+	}
+
+}
 
 
 
-void _01_score_introduced(){
+void _02_score_introduced(){
 	// 1. Introduce scores
 	_introduce_score("123", "789");
 	_introduce_score("456", "345");
@@ -124,7 +133,7 @@ void _01_score_introduced(){
     web_server->clear();
 }
 
-void _02_top(){
+void _03_top(){
 
 	// 1. Introduce scores
 	_introduce_score("123", "789");
@@ -137,6 +146,10 @@ void _02_top(){
     _do_send_and_receive("list\n", response);
     cout << "INFO: Read from server -> " << response << endl;
 
+	// 3. Top
+    _do_send_and_receive("Top2\n", response);
+    cout << "INFO: Read from server -> " << response << endl;
+
 }
 
 int main()
@@ -145,14 +158,19 @@ int main()
   init();
 
   cout << "++++++++++++++++++++++++"  << endl;
-  cout << "Test #1 " << endl;
+  cout << "Test #1" << endl;
   cout << "++++++++++++++++++++++++"  << endl;
-  _01_score_introduced();
+  _01_score_compare();
 
   cout << "++++++++++++++++++++++++"  << endl;
   cout << "Test #2 " << endl;
   cout << "++++++++++++++++++++++++"  << endl;
-  //_02_top();
+  _02_score_introduced();
+
+  cout << "++++++++++++++++++++++++"  << endl;
+  cout << "Test #3 " << endl;
+  cout << "++++++++++++++++++++++++"  << endl;
+  _03_top();
 
   // Destroy WebServer
   destroy();

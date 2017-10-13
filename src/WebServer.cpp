@@ -139,6 +139,14 @@ bool WebServer::do_send(const string& data){
   }
 }
 
+bool WebServer::score_compare(std::pair<string,string> pair1,
+								std::pair<string,string> pair2){
+
+	int pair1_score = std::stoi (pair1.second);
+	int pair2_score = std::stoi (pair2.second);
+	return (pair1_score < pair2_score);
+}
+
 void WebServer::process_message(string input){
 
   std::lock_guard<std::mutex> guard(_operation_mutex);
@@ -158,7 +166,10 @@ void WebServer::process_message(string input){
 
       if( res ){
           cout << "INFO: Introduced score user:" << user << " score:" << score << endl;
-          _user_score_map[user] = score;
+          _user_score_map.push_back(std::make_pair(user, score));
+
+          // using function as comp
+          std::sort (_user_score_map.begin(), _user_score_map.end(), score_compare);
       }
 
 	  // Send response to client
@@ -184,8 +195,29 @@ void WebServer::process_message(string input){
   }
   else if (input.find("Top") == 0)
   {
-	  string elements = input.substr(3, input.size()-3);
+	  int elements = std::stoi (input.substr(3, input.size()-3) );
 	  cout << "Getting Top of " << elements << endl;
+	  ptree pt;
+	  ptree score_list_pt;
+
+	  std::vector<std::pair<string,string>>::reverse_iterator rit = _user_score_map.rbegin();
+	  for (; rit!= _user_score_map.rend(); ++rit){
+		  ptree child;
+		  child.put(rit->first, rit->second);
+		  score_list_pt.push_back(std::make_pair("", child));
+		  elements --;
+		  if( elements == 0) break;
+
+	  }
+	  pt.add_child("score_list", score_list_pt);
+
+	  std::ostringstream buf;
+      write_json (buf, pt, false);
+      std::string response = buf.str(); // {"foo":"bar"}
+      do_send(response + "\n");
+
+
+
   }
   else
   {
