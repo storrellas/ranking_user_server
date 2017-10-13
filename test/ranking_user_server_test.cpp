@@ -101,7 +101,7 @@ void _01_score_compare(){
 	std::pair<string, int> pair1("123", 456);
 	std::pair<string, int> pair2("345", 879);
 
-	if( WebServer::score_compare(pair1, pair2) ) {
+	if( WebServer::score_compare(pair1, pair2) == false ) { // Means pair1 < pair2
 		cerr << "Error: on compare" << endl;
 	}
 
@@ -201,36 +201,60 @@ void _05_at(){
 
 }
 
-int main()
+int main(int argc, char* argv[])
 {
+  int selected_test = 0;
+  if( argc == 2 ){
+	  cout << "Single test mode selected with test " << argv[1] << endl;
+	  cout << "-------------------------------------"  << endl;
+	  selected_test = stoi(argv[1]);
+  }
+
+  cout << "++++++++++++++++++++++++"  << endl;
+  cout << "Tearup" << endl;
+  cout << "++++++++++++++++++++++++"  << endl;
   // Initialise WebServer
   init();
 
-  cout << "++++++++++++++++++++++++"  << endl;
-  cout << "Test #1" << endl;
-  cout << "++++++++++++++++++++++++"  << endl;
-  _01_score_compare();
+  if( selected_test == 0 or selected_test == 1 ){
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  cout << "Test #1" << endl;
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  _01_score_compare();
+  }
+
+  if( selected_test == 0 or selected_test == 2 ){
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  cout << "Test #2 " << endl;
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  _02_score_introduced();
+  }
+
+  if( selected_test == 0 or selected_test == 3 ){
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  cout << "Test #3 " << endl;
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  _03_score_opeartor();
+  }
+
+
+  if( selected_test == 0 or selected_test == 4 ){
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  cout << "Test #4 " << endl;
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  _04_top();
+  }
+
+  if( selected_test == 0 or selected_test == 5 ){
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  cout << "Test #5 " << endl;
+	  cout << "++++++++++++++++++++++++"  << endl;
+	  _05_at();
+  }
 
   cout << "++++++++++++++++++++++++"  << endl;
-  cout << "Test #2 " << endl;
+  cout << "Teardown" << endl;
   cout << "++++++++++++++++++++++++"  << endl;
-  _02_score_introduced();
-
-  cout << "++++++++++++++++++++++++"  << endl;
-  cout << "Test #3 " << endl;
-  cout << "++++++++++++++++++++++++"  << endl;
-  _03_score_opeartor();
-
-  cout << "++++++++++++++++++++++++"  << endl;
-  cout << "Test #4 " << endl;
-  cout << "++++++++++++++++++++++++"  << endl;
-  _04_top();
-
-  cout << "++++++++++++++++++++++++"  << endl;
-  cout << "Test #5 " << endl;
-  cout << "++++++++++++++++++++++++"  << endl;
-  _05_at();
-
   // Destroy WebServer
   destroy();
   return 0;
