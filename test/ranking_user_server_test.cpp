@@ -1,12 +1,22 @@
+// System includes
 #include <iostream>
+#include <map>
 
-#include <src/WebServer.h>
+// Boost includes
 #include <boost/array.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
+
+// Project includes
+#include <src/WebServer.h>
+
 
 using namespace std;
 using namespace boost;
 using boost::asio::ip::tcp;
-using boost::asio::ip::udp;
+using boost::property_tree::ptree;
+using boost::property_tree::read_json;
+using boost::property_tree::write_json;
 
 namespace {
 
@@ -60,8 +70,6 @@ void do_send_and_receive(const string& request, string& response){
     std::string line;
     std::getline(is, response);
 
-cout << "In here " << endl;
-
     socket.close();
 
 }
@@ -72,44 +80,23 @@ cout << "In here " << endl;
 
 void _01_score_introduced(){
 
+	// 1. Introduce score
+    ptree pt;
+    pt.put("user", "123");
+    pt.put("score", "789");
 
-	string message = "mydata\n";
+    std::ostringstream buf;
+    write_json (buf, pt, false);
+    std::string json = buf.str(); // {"foo":"bar"}
+    cout << json << endl;
 
+    string response;
+	do_send_and_receive(json, response);
+    cout << "INFO: Read from server -> " << response << endl;
 
-	string response;
-	do_send_and_receive(message, response);
-    cout << "INFO: Read from server " << response << endl;
-
-	do_send_and_receive(message, response);
-    cout << "INFO: Read from server " << response << endl;
-
-//	boost::system::error_code error;
-//    boost::asio::io_service io_service;
-//
-//    // Determine the location of the server.
-//    tcp::resolver resolver(io_service);
-//    tcp::resolver::query query("localhost", "8080");
-//    tcp::endpoint remote_endpoint = *resolver.resolve(query);
-//
-//    // Establish the control connection to the server.
-//    tcp::socket socket(io_service);
-//    socket.connect(remote_endpoint);
-//
-//    // Send request
-//    socket.write_some(boost::asio::buffer(message.data(), message.size()), error);
-//
-//    // Get response
-//    boost::asio::streambuf response;
-//    boost::asio::read_until(socket, response, "\n");
-//    // Grab received
-//    std::istream is(&response);
-//    std::string line;
-//    std::getline(is, line);
-//    cout << "INFO: Read from server " << line << endl;
-//
-//
-//    socket.close();
-
+	// 2. List
+	do_send_and_receive("list\n", response);
+    cout << "INFO: Read from server -> " << response << endl;
 }
 
 int main()

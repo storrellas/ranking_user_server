@@ -143,8 +143,48 @@ void WebServer::process_message(string input){
 
   std::lock_guard<std::mutex> guard(_operation_mutex);
   cout << "INFO: Processing message -> " << input << endl;
+  bool res = true;
 
-  // Send response to client
-  do_send("OK\n");
+  if (input.find("{") == 0)
+  {
+      // Read json.
+      ptree pt;
+      std::istringstream is (input);
+      read_json (is, pt);
+      std::string user = pt.get<std::string> ("user");
+      if( user.empty() ) res = false;
+      std::string score = pt.get<std::string> ("score");
+      if( user.empty() ) res = false;
+
+      if( res ){
+          cout << "INFO: Introduced score user:" << user << " score:" << score << endl;
+          _user_score_map[user] = score;
+      }
+
+	  // Send response to client
+	  string res_str = res?"OK":"KO";
+	  do_send(res_str + "\n");
+
+  }else if (input.find("list") == 0)
+  {
+	  ptree pt;
+	  ptree score_list_pt;
+	  for( auto item : _user_score_map ){
+		  ptree child;
+		  child.put(item.first, item.second);
+		  score_list_pt.push_back(std::make_pair("", child));
+	  }
+	  pt.add_child("score_list", score_list_pt);
+
+	  std::ostringstream buf;
+      write_json (buf, pt, false);
+      std::string response = buf.str(); // {"foo":"bar"}
+      do_send(response + "\n");
+  }else{
+	  do_send("command not recognized\n");
+  }
+
+
+
 
 }

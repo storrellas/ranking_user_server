@@ -10,8 +10,13 @@
 #include <boost/thread.hpp>
 #include <boost/asio.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 using namespace std;
+using boost::property_tree::ptree;
+using boost::property_tree::read_json;
+using boost::property_tree::write_json;
 
 class WebServer
 {
@@ -59,6 +64,10 @@ public :
    */
   std::string ami_message_;
 
+  /**
+   * Maps of user score
+   */
+  std::map<string,string> _user_score_map;
 
 public:
 
