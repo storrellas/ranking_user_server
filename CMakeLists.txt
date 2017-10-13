@@ -15,10 +15,19 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 # Get source files
 file(GLOB_RECURSE SRC_LIST ${PROJECT_SOURCE_DIR}/src/*.cpp)
+# Remove main
+list(REMOVE_ITEM SRC_LIST ${PROJECT_SOURCE_DIR}/src/main.cpp)
 
 # Create executable
-add_executable(${PROJECT_NAME} ${SRC_LIST})
+add_executable(${PROJECT_NAME} ${SRC_LIST};./src/main.cpp)
 target_link_libraries (${PROJECT_NAME} "boost_system")
 target_link_libraries (${PROJECT_NAME} "boost_thread")
+
+set(PROJECT_TEST_NAME ${PROJECT_NAME}_test)
+add_executable(${PROJECT_TEST_NAME} ${SRC_LIST};./test/ranking_user_server_test.cpp )
+target_link_libraries (${PROJECT_TEST_NAME} "boost_system")
+target_link_libraries (${PROJECT_TEST_NAME} "boost_thread")
+target_link_libraries (${PROJECT_TEST_NAME} "pthread")
+
 
 
