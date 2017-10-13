@@ -116,7 +116,7 @@ void _02_score_introduced(){
 
 	// 2. List
 	string response;
-    _do_send_and_receive("list\n", response);
+    _do_send_and_receive("List\n", response);
     cout << "INFO: Read from server -> " << response << endl;
 
     // Analyse reponse
@@ -141,7 +141,7 @@ void _03_score_opeartor(){
 
 	// 2. List
 	string response;
-    _do_send_and_receive("list\n", response);
+    _do_send_and_receive("List\n", response);
     cout << "INFO: Read from server -> " << response << endl;
 
     // Analyse reponse
@@ -168,7 +168,7 @@ void _04_top(){
 
 	// 2. List
 	string response;
-    _do_send_and_receive("list\n", response);
+    _do_send_and_receive("List\n", response);
     cout << "INFO: Read from server -> " << response << endl;
 
 	// 3. Top

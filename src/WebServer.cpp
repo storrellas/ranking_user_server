@@ -33,12 +33,6 @@ void WebServer::init(const int& port){
   _acceptor.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
   _acceptor.bind(endpoint);
   _acceptor.listen();
-//
-//  // Initialise worker
-//  _th_accept_worker =
-//      new boost::thread(boost::bind(&AsteriskMockup::accept_worker, this));
-
-
 }
 
 void WebServer::stop(){
@@ -68,7 +62,6 @@ void WebServer::accept_worker(){
     std::cerr << "Exception: " << e.what() << endl;
   }
   std::cout << "Terminated accept_worker " << endl;
-  //LLOG_INFO(LogItem(undefined, "Terminated accept_worker"));
 }
 
 void WebServer::do_accept(){
@@ -102,24 +95,13 @@ void WebServer::do_read(const boost::system::error_code& err){
     std::istream is(&streambuf_);
     std::string line;
     std::getline(is, line);
-//    ami_message_ += line + "\n";
-//
-//    // If we received '\n' means that message was finished
-//    if( line.empty() ){
-//      process_message(ami_message_);
-//      ami_message_.clear();
-//    }
 
     process_message( line );
 
     _socket_client.close();
-//    boost::asio::async_read_until(_socket_client, streambuf_, "\n",
-//        boost::bind(&WebServer::do_read, this, boost::asio::placeholders::error));
-
   }
   else
   {
-    //LLOG_WARNING(LogItem(undefined, "Error receiving: " + err.message()));
     cout << "Error receiving: " + err.message() << endl;
   }
 
@@ -133,7 +115,6 @@ bool WebServer::do_send(const string& data){
         boost::asio::transfer_all(), ignored_error);
     return true;
   }else{
-    //LLOG_ERROR(LogItem(undefined, "No message to be sent"));
 	  cout << "No message to be sent" << endl;
     return false;
   }
@@ -200,7 +181,7 @@ void WebServer::process_message(string input){
 	  do_send(res_str + "\n");
 
   }
-  else if (input.find("list") == 0)
+  else if (input.find("List") == 0)
   {
 	  ptree pt;
 	  ptree score_list_pt;
