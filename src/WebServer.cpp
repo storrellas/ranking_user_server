@@ -188,7 +188,6 @@ void WebServer::process_message(string input){
 	  for( auto item : _user_score_map ){
 		  ptree child;
 		  child.put("user", item.first);
-		  score_list_pt.push_back(std::make_pair("", child));
 		  child.put("score", std::to_string(item.second));
 		  score_list_pt.push_back(std::make_pair("", child));
 	  }
@@ -210,7 +209,6 @@ void WebServer::process_message(string input){
 	  for (; rit!= _user_score_map.rend(); ++rit){
 		  ptree child;
 		  child.put("user", rit->first);
-		  score_list_pt.push_back(std::make_pair("", child));
 		  child.put("score", std::to_string(rit->second));
 		  score_list_pt.push_back(std::make_pair("", child));
 		  elements --;
@@ -246,7 +244,6 @@ void WebServer::process_message(string input){
 	  for( int i = min_index; i < max_index+1; ++i ){
 		  ptree child;
 		  child.put("user", _user_score_map[i].first);
-		  score_list_pt.push_back(std::make_pair("", child));
 		  child.put("score", std::to_string(_user_score_map[i].second));
 		  score_list_pt.push_back(std::make_pair("", child));
 

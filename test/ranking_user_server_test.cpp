@@ -6,6 +6,7 @@
 #include <boost/array.hpp>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/foreach.hpp>
 
 // Project includes
 #include <src/WebServer.h>
@@ -104,7 +105,7 @@ void _01_score_compare(){
 	if( WebServer::score_compare(pair1, pair2) == false ) { // Means pair1 < pair2
 		cerr << "Error: on compare" << endl;
 	}
-
+	cout << "OK!" << endl;
 }
 
 
@@ -149,13 +150,18 @@ void _03_score_opeartor(){
     std::istringstream is (response);
     read_json (is, pt);
 
-    ptree score_list_pt = pt.get_child("score_list");
+    ptree score_list_pt	 = pt.get_child("score_list");
     if(score_list_pt.size() != 1){
     	cerr << "Error: Scores not properly introduced" << endl;
     }
 
-    for(const ptree::value_type& child: score_list_pt){
-    	//cout << value_type<string>get()
+//    for(const ptree::value_type& child: score_list_pt){
+//    	cout << child<string>get("score") << endl;
+//    }
+    BOOST_FOREACH(ptree::value_type& child, score_list_pt){
+    	//cout << child.second.get<string>("score") << endl;
+
+    	cout << child.first << endl;
     }
 
     // Clear WebServer cache
