@@ -137,6 +137,7 @@ void _03_score_opeartor(){
 	// 1. Introduce scores
 	_introduce_score("123", "700");
 	_introduce_score("123", "+20");
+	_introduce_score("123", "-40");
 
 	// 2. List
 	string response;

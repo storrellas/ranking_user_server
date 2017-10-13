@@ -188,11 +188,6 @@ void WebServer::process_message(string input){
     	  }else{
     		  res = false;
     	  }
-
-    	  cout << "operation " << operation << endl;
-    	  cout << "value " << value << endl;
-
-
       }
 
 	  // Send response to client
@@ -219,7 +214,7 @@ void WebServer::process_message(string input){
   else if (input.find("Top") == 0)
   {
 	  int elements = std::stoi (input.substr(3, input.size()-3) );
-	  cout << "Getting Top of " << elements << endl;
+	  cout << "INFO: Getting Top " << elements << endl;
 	  ptree pt;
 	  ptree score_list_pt;
 
@@ -238,9 +233,6 @@ void WebServer::process_message(string input){
       write_json (buf, pt, false);
       std::string response = buf.str(); // {"foo":"bar"}
       do_send(response + "\n");
-
-
-
   }
   else
   {
